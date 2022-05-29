@@ -1,0 +1,3 @@
+[submodule "hafly"]
+	path = hafly
+	url = https://github.com/Sintrastes/hafly

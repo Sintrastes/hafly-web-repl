@@ -8,10 +8,13 @@ function initTerm(callback) {
         term.onKey(function(x) {
             if (x.key != '\r') {
                 term.write(x.key);
+                currentText += x.key;
             } else {
                 callback(currentText, function(processedText) {
+                    term.write('\r\n');
                     term.write(processedText);
                     term.write('\r\n > ');
+                    currentText = '';
                 });
             }
         });

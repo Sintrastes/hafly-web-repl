@@ -34,5 +34,5 @@ jobs:
     - name: Archive webapp
       uses: actions/upload-artifact@v2
       with:
-        name: ghcjs-frontend
+        name: hafly-web-repl
         path: hafly-web-repl.tar.gz

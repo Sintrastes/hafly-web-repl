@@ -18,11 +18,5 @@ project ./. ({ pkgs, ... }: {
         ver = "0.6.3.0";
         sha256 = "3PLCQ94ONQtjQc8AqVMgCVrZZW766T8PDevOvKC4VDw=";
       } {};
-
-      haskeline = self.callHackageDirect {
-        pkg = "haskeline";
-        ver = "0.8.1.0";
-        sha256 = "vaA3Y/A1OYGhL4rDhhE9v+1ptdcIbJ0dTrIa9dvVY+Q=";
-      } {};
   };
 })

@@ -20,5 +20,7 @@ project ./. ({ pkgs, ... }: {
         ver = "0.6.3.0";
         sha256 = "3PLCQ94ONQtjQc8AqVMgCVrZZW766T8PDevOvKC4VDw=";
       } {};
+
+    hafly = ./hafly  
   };
 })

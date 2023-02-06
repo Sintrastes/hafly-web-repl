@@ -7,9 +7,6 @@
 with obelisk;
 project ./. ({ pkgs, ... }: {
 
-  # android.applicationId = "io.github.sintrastes.xenfret";
-  # android.displayName = "Xen Fret";
-
   packages = {
     hafly-web-repl = ./.;
   };
@@ -21,6 +18,6 @@ project ./. ({ pkgs, ... }: {
         sha256 = "3PLCQ94ONQtjQc8AqVMgCVrZZW766T8PDevOvKC4VDw=";
       } {};
 
-    hafly = ./hafly;
+    hafly = self.callPackage (import ./hafly/default.nix) {};
   };
 })

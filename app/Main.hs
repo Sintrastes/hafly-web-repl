@@ -36,28 +36,30 @@ header = do
 
 main :: IO ()
 main = run 3911 $ mainWidgetWithHead header $
-     xtermJs processHaflyExpr
+     xtermJs base processHaflyExpr
 
-processHaflyExpr :: T.Text -> IO T.Text
-processHaflyExpr text = 
-     let expr = parseExprDef (operatorDefs base) text
+processHaflyExpr :: InterpreterContext -> T.Text -> IO (T.Text, InterpreterContext)
+processHaflyExpr ctx text = 
+     let expr = parseExprDef (operatorDefs ctx) text
      in case expr of
             Right (x, xDef) -> do
-                case flattenDyn <$> interpretRec base x xDef of
-                    Left s -> pure $ T.pack s
-                    Right dy -> pure ""
+                case flattenDyn <$> interpretRec ctx x xDef of
+                    Left s -> pure $ (T.pack s, ctx)
+                    Right dy -> return ("", addDef ctx x dy)
             Left err -> do
-                case parseExpression (operatorDefs base) text of
-                    Left err -> pure $ T.pack $ errorBundlePretty err
+                case parseExpression (operatorDefs ctx) text of
+                    Left err -> pure $ (T.pack $ errorBundlePretty err, ctx)
                     Right exp -> do
-                        case interpretIO base exp of
+                        case interpretIO ctx exp of
                             Just action -> do
                                 action
-                                return ""
+                                return ("", ctx)
                             Nothing -> do
                                 case interpret base exp of
-                                    Left s -> pure $ T.pack s
-                                    Right result -> tryShowRes base result
+                                    Left s -> pure $ (T.pack s, ctx)
+                                    Right result -> do
+                                        res <- tryShowRes base result
+                                        pure (res, ctx)
 
 tryShowRes :: InterpreterContext -> Dynamic -> IO T.Text
 tryShowRes ctx@InterpreterContext {..} x = catch (do
@@ -81,9 +83,19 @@ liftFrontend' d x = do
     res <- current <$> prerender (pure d) x
     sample res
 
-xtermJs :: _ => (T.Text -> IO T.Text) -> m ()
-xtermJs processInput = do
+xtermJs :: _ => InterpreterContext -> (InterpreterContext -> T.Text -> IO (T.Text, InterpreterContext)) -> m ()
+xtermJs initialCtx processInput = elAttr "div" ("style" =: "width: min(50em, 50vw); margin: auto;") $ do
     postBuild <- delay 0.1 =<< getPostBuild
+
+    el "h1" $
+      text "Try Hafly"
+
+    el "p" $ do
+      elAttr "a" ("href" =: "https://github.com/Sintrastes/hafly") $ text "Hafly"
+      text " is a dynamic embeddable scripting language designed to be embedded in Haskell projects."
+
+    el "p" $ do
+      text "Try it out in the interpreter below!"
 
     el "div" $ 
         elAttr "div" ("id" =: "terminal") blank
@@ -92,10 +104,9 @@ xtermJs processInput = do
           arg <- valToText $ args Prelude.!! 0
           let continuation = args Prelude.!! 1
 
-          result <- textToJSString <$> liftIO
-              (processInput arg)
+          result <- liftIO (processInput initialCtx arg)
 
-          call continuation global [result]
+          call continuation global [textToJSString $ fst result]
 
           pure ()
 

@@ -76,25 +76,30 @@ tryShowRes ctx@InterpreterContext {..} x = catch (do
           Right r -> r)
             (\(e :: SomeException) -> pure $ T.pack $ show x)
 
+liftFrontend' :: (MonadSample t m, Prerender t m) => b -> Client m b -> m b
+liftFrontend' d x = do
+    res <- current <$> prerender (pure d) x
+    sample res
+
 xtermJs :: _ => (T.Text -> IO T.Text) -> m ()
 xtermJs processInput = do
-     el "div" $ 
-          elAttr "div" ("id" =: "terminal") blank
+    el "div" $ 
+        elAttr "div" ("id" =: "terminal") blank
 
-     let callback = function $ \_ _ args -> do
+    let callback = function $ \_ _ args -> do
           arg <- valToText $ args Prelude.!! 0
           let continuation = args Prelude.!! 1
 
           result <- textToJSString <$> liftIO
-               (processInput arg)
+              (processInput arg)
 
           call continuation global [result]
 
           pure ()
 
-     prerender (pure ()) $ do
-          liftJSM $ jsg1 ("initTerm" :: String)
-               callback
-          pure ()
+    liftFrontend' () $ do
+        liftJSM $ jsg1 ("initTerm" :: String)
+            callback
+        pure ()
 
-     blank
+    blank

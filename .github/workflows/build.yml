@@ -17,7 +17,7 @@ jobs:
           binary-caches-parallel-connections = 40
     - name: Build webapp with nix
       run: |
-        nix-build --show-trace -A ghcjs.hafly-repl -o result
+        nix-build -A ghcjs.hafly-repl -o result
         tar -cvzf hafly-repl-js-hafly-repl.tar.gz result/*
     - name: Build native app with nix
       run: |

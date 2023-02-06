@@ -18,6 +18,6 @@ project ./. ({ pkgs, ... }: {
         sha256 = "3PLCQ94ONQtjQc8AqVMgCVrZZW766T8PDevOvKC4VDw=";
       } {};
 
-    hafly = self.callPackage (import ./hafly/default.nix) {};
+    hafly = self.callPackage ./hafly {};
   };
 })

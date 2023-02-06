@@ -99,9 +99,9 @@ xtermJs processInput = do
 
           pure ()
 
-    -- performEvent $ postBuild <&> \_ -> do
-    --     liftJSM $ jsg1 ("initTerm" :: String)
-    --         callback
-    --     pure ()
+    performEvent $ postBuild <&> \_ -> do
+        liftJSM $ jsg1 ("initTerm" :: String)
+            callback
+        pure ()
 
     blank

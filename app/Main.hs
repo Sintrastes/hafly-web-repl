@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, FlexibleContexts #-}
 
 module Main where
 
@@ -83,6 +83,8 @@ liftFrontend' d x = do
 
 xtermJs :: _ => (T.Text -> IO T.Text) -> m ()
 xtermJs processInput = do
+    postBuild <- delay 0.1 =<< getPostBuild
+
     el "div" $ 
         elAttr "div" ("id" =: "terminal") blank
 
@@ -97,7 +99,7 @@ xtermJs processInput = do
 
           pure ()
 
-    liftFrontend' () $ do
+    performEvent $ postBuild <&> \_ -> do
         liftJSM $ jsg1 ("initTerm" :: String)
             callback
         pure ()

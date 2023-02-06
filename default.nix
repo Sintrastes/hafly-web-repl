@@ -8,6 +8,7 @@ with obelisk;
 project ./. ({ pkgs, ... }: {
 
   packages = {
+    hafly = ./hafly/default.nix;
     hafly-web-repl = ./.;
   };
 
@@ -17,7 +18,5 @@ project ./. ({ pkgs, ... }: {
         ver = "0.6.3.0";
         sha256 = "3PLCQ94ONQtjQc8AqVMgCVrZZW766T8PDevOvKC4VDw=";
       } {};
-
-    hafly = self.callPackage ./hafly/default.nix {};
   };
 })

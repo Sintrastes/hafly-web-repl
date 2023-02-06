@@ -8,7 +8,7 @@ with obelisk;
 project ./. ({ pkgs, ... }: {
 
   packages = {
-    hafly = ./hafly/default.nix;
+    hafly = ./hafly;
     hafly-web-repl = ./.;
   };
 

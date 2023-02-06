@@ -20,7 +20,7 @@ jobs:
     - name: Build webapp with nix
       run: |
         nix-build -A ghcjs.hafly-web-repl -o result
-        tar -cvzf hafly-repl-js-hafly-web-repl.tar.gz result/*
+        tar -cvzf hafly-web-repl.tar.gz result/*
     # - name: Build native app with nix
     #   run: |
     #     nix-build -A ghc.hafly-web-repl -o result-native
@@ -35,4 +35,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ghcjs-frontend
-        path: hafly-web-repl-js-frontend.tar.gz
+        path: hafly-web-repl.tar.gz

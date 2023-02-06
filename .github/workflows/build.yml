@@ -23,7 +23,7 @@ jobs:
         tar -cvzf hafly-repl-js-hafly-web-repl.tar.gz result/*
     - name: Build native app with nix
       run: |
-        nix-build -A ghc.frontend -o result-native
+        nix-build -A ghc.hafly-web-repl -o result-native
         ls result-native
         tar -cvzf hafly-web-repl-x86_64-linux.tar.gz result-native/*
     - name: Archive native app

@@ -11,7 +11,7 @@ project ./. ({ pkgs, ... }: {
   # android.displayName = "Xen Fret";
 
   packages = {
-    hafly-repl = ./.;
+    hafly-web-repl = ./.;
   };
 
   overrides = self: super: {

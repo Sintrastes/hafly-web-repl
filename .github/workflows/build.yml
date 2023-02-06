@@ -17,20 +17,20 @@ jobs:
           binary-caches-parallel-connections = 40
     - name: Build webapp with nix
       run: |
-        nix-build -A ghcjs.hafly-repl -o result
-        tar -cvzf hafly-repl-js-hafly-repl.tar.gz result/*
+        nix-build -A ghcjs.hafly-web-repl -o result
+        tar -cvzf hafly-repl-js-hafly-web-repl.tar.gz result/*
     - name: Build native app with nix
       run: |
         nix-build -A ghc.frontend -o result-native
         ls result-native
-        tar -cvzf hafly-repl-x86_64-linux.tar.gz result-native/*
+        tar -cvzf hafly-web-repl-x86_64-linux.tar.gz result-native/*
     - name: Archive native app
       uses: actions/upload-artifact@v2
       with:
         name: x86_64-linux-frontend
-        path: hafly-repl-x86_64-linux.tar.gz
+        path: hafly-web-repl-x86_64-linux.tar.gz
     - name: Archive webapp
       uses: actions/upload-artifact@v2
       with:
         name: ghcjs-frontend
-        path: hafly-repl-js-frontend.tar.gz
+        path: hafly-web-repl-js-frontend.tar.gz

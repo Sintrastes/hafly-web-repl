@@ -21,6 +21,6 @@ project ./. ({ pkgs, ... }: {
         sha256 = "3PLCQ94ONQtjQc8AqVMgCVrZZW766T8PDevOvKC4VDw=";
       } {};
 
-    hafly = ./hafly  
+    hafly = ./hafly;
   };
 })

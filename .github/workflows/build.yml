@@ -1,0 +1,36 @@
+name: "Build"
+on:
+  pull_request:
+  push:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.4.0
+    - uses: cachix/install-nix-action@v15
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+        extra_nix_config: |
+          sandbox = true
+          binary-caches = https://cache.nixos.org https://nixcache.reflex-frp.org
+          binary-cache-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= ryantrinkle.com-1:JJiAKaRv9mWgpVAz8dwewnZe0AzzEAzPkagE9SP5NWI=
+          binary-caches-parallel-connections = 40
+    - name: Build webapp with nix
+      run: |
+        nix-build --show-trace -A ghcjs.hafly-repl -o result
+        tar -cvzf hafly-repl-js-hafly-repl.tar.gz result/*
+    - name: Build native app with nix
+      run: |
+        nix-build -A ghc.frontend -o result-native
+        ls result-native
+        tar -cvzf hafly-repl-x86_64-linux.tar.gz result-native/*
+    - name: Archive native app
+      uses: actions/upload-artifact@v2
+      with:
+        name: x86_64-linux-frontend
+        path: hafly-repl-x86_64-linux.tar.gz
+    - name: Archive webapp
+      uses: actions/upload-artifact@v2
+      with:
+        name: ghcjs-frontend
+        path: hafly-repl-js-frontend.tar.gz

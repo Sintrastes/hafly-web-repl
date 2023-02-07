@@ -97,7 +97,7 @@ xtermJs initialCtx processInput = elAttr "div" ("style" =: "width: min(50em, 50v
       text " is a dynamic embeddable scripting language designed to be embedded in Haskell projects."
 
     el "p" $ do
-      text "Try it out in the interpreter below!"
+      text "Try it out in the interpreter below! If it does not show up immediately, you may need to refresh the page."
 
     el "div" $ 
         elAttr "div" ("id" =: "terminal") blank

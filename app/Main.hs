@@ -17,7 +17,7 @@ import Control.Exception
 import Data.Dynamic
 import Data.MultiMap
 import Prelude hiding (lookup)
-
+import Data.IORef
 
 header :: _ => m ()
 header = do
@@ -55,10 +55,10 @@ processHaflyExpr ctx text =
                                 action
                                 return ("", ctx)
                             Nothing -> do
-                                case interpret base exp of
+                                case interpret ctx exp of
                                     Left s -> pure $ (T.pack s, ctx)
                                     Right result -> do
-                                        res <- tryShowRes base result
+                                        res <- tryShowRes ctx result
                                         pure (res, ctx)
 
 tryShowRes :: InterpreterContext -> Dynamic -> IO T.Text
@@ -87,6 +87,8 @@ xtermJs :: _ => InterpreterContext -> (InterpreterContext -> T.Text -> IO (T.Tex
 xtermJs initialCtx processInput = elAttr "div" ("style" =: "width: min(50em, 50vw); margin: auto;") $ do
     postBuild <- delay 0.1 =<< getPostBuild
 
+    ctx <- liftIO $ newIORef initialCtx
+
     el "h1" $
       text "Try Hafly"
 
@@ -104,9 +106,13 @@ xtermJs initialCtx processInput = elAttr "div" ("style" =: "width: min(50em, 50v
           arg <- valToText $ args Prelude.!! 0
           let continuation = args Prelude.!! 1
 
-          result <- liftIO (processInput initialCtx arg)
+          currentCtx <- liftIO $ readIORef ctx
+
+          result <- liftIO (processInput currentCtx arg)
 
           call continuation global [textToJSString $ fst result]
+
+          liftIO $ writeIORef ctx (snd result)
 
           pure ()
 

@@ -63,7 +63,7 @@ processHaflyExpr ctx text =
 
 tryShowRes :: InterpreterContext -> Dynamic -> IO T.Text
 tryShowRes ctx@InterpreterContext {..} x = catch (do
-    case toMaybe $ dispatched "show" $ lookup "show" exprDefs of
+    case toMaybe $ dispatched "show" $ lookup "show" (traverseExprs exprDefs) of
       Nothing -> pure $ T.pack $ show x
       Just showF -> do
         -- Need to guard against excepions for now as

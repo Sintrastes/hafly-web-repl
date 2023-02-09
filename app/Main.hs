@@ -43,14 +43,14 @@ main = run 3911 $ mainWidgetWithHead header $
 
 processHaflyExpr :: InterpreterContext -> T.Text -> IO (T.Text, InterpreterContext)
 processHaflyExpr ctx text = 
-     let expr = parseExprDef (operatorDefs ctx) text
+     let expr = parseExprDef (traverseOps $ operatorDefs ctx) text
      in case expr of
             Right (x, xDef) -> do
                 case flattenDyn <$> interpretRec ctx x xDef of
                     Left s -> pure $ (T.pack s, ctx)
                     Right dy -> return ("", addDef ctx x dy)
             Left err -> do
-                case parseExpression (operatorDefs ctx) text of
+                case parseExpression (traverseOps $ operatorDefs ctx) text of
                     Left err -> pure $ (T.pack $ errorBundlePretty err, ctx)
                     Right exp -> do
                         case interpretIO ctx exp of

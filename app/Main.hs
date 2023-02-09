@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings, FlexibleContexts, DeriveFunctor, TypeApplications #-}
 
 module Main where
 
@@ -18,6 +18,9 @@ import Data.Dynamic
 import Data.MultiMap
 import Prelude hiding (lookup)
 import Data.IORef
+import Control.Monad.Free
+import Data.Proxy
+import Data.MultiMap (fromList)
 
 header :: _ => m ()
 header = do
@@ -36,7 +39,7 @@ header = do
 
 main :: IO ()
 main = run 3911 $ mainWidgetWithHead header $
-     xtermJs base processHaflyExpr
+     xtermJs (base <> htmlModule) processHaflyExpr
 
 processHaflyExpr :: InterpreterContext -> T.Text -> IO (T.Text, InterpreterContext)
 processHaflyExpr ctx text = 
@@ -122,3 +125,37 @@ xtermJs initialCtx processInput = elAttr "div" ("style" =: "width: min(50em, 50v
         pure ()
 
     blank
+
+data HTMLAlg a = 
+    P String a 
+  | H1 String a 
+  | H2 String a 
+  | Div (HTML ()) a
+    deriving(Functor)
+
+type HTML = Free HTMLAlg
+
+p :: String -> HTML ()
+p x = liftF $ P x ()
+
+h1 :: String -> HTML ()
+h1 x = liftF $ H1 x ()
+
+h2 :: String -> HTML ()
+h2 x = liftF $ H2 x ()
+
+div :: HTML () -> HTML ()
+div x = liftF $ Div x ()
+
+htmlModule = InterpreterContext {
+    operatorDefs = [],
+    exprDefs = fromList [
+      ("p", \_ -> toDyn p)
+    , ("h1", \_ -> toDyn h1)
+    , ("h2", \_ -> toDyn h2)
+    , ("div", \_ -> toDyn Main.div)
+    ],
+    monadDefs = [
+      fromMonad $ Proxy @HTML
+    ]
+}

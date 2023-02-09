@@ -37,6 +37,7 @@ executable hafly-web-repl
       , megaparsec
       , multimap
       , hafly
+      , free
     hs-source-dirs:   app
     default-language: Haskell2010
     ghc-options: -threaded -Wall -Wredundant-constraints -Wincomplete-uni-patterns -Wincomplete-record-updates -fno-show-valid-hole-fits
